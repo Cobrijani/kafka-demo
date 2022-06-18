@@ -1,0 +1,13 @@
+spring:
+  kafka:
+    bootstrap-servers: localhost:29092
+    consumer:
+      group-id: kafka-producer-demo
+      key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
+      properties:
+        spring.json.trusted.packages: com.github.cobrijani.core
+        spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+server:
+  port: 8081
