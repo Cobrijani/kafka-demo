@@ -9,5 +9,12 @@ spring:
         spring.json.trusted.packages: com.github.cobrijani.core
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
         spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+  datasource:
+    url: jdbc:postgresql://localhost:5430/consumer-user
+    username: consumer-user
+    password: consumer-pass
+  jpa:
+    hibernate:
+      ddl-auto: update
 server:
   port: 8081

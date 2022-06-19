@@ -4,3 +4,10 @@ spring:
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  datasource:
+    url: jdbc:postgresql://localhost:5431/producer-user
+    username: producer-user
+    password: producer-pass
+  jpa:
+    hibernate:
+      ddl-auto: update

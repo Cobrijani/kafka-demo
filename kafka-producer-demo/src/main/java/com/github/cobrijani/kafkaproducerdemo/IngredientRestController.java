@@ -1,17 +1,18 @@
 package com.github.cobrijani.kafkaproducerdemo;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/ingredients")
+@RequiredArgsConstructor
 public class IngredientRestController {
 
-    @Autowired
-    private IngredientService service;
+    private final IngredientService service;
 
     @GetMapping
     public List<Ingredient> getIngredients() {
@@ -23,4 +24,20 @@ public class IngredientRestController {
         service.save(ingredient);
         return ResponseEntity.ok().build();
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Void> updateIngredient(@PathVariable UUID id, @RequestBody Ingredient ingredient) {
+        if (!id.equals(ingredient.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        service.save(ingredient);
+        return ResponseEntity.ok().build();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteIngredient(@PathVariable UUID id) {
+        service.deleteIngredient(id);
+        return ResponseEntity.ok().build();
+    }
+
 }
