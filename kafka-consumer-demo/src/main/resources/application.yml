@@ -1,14 +1,17 @@
 spring:
   kafka:
     bootstrap-servers: localhost:29092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: com.github.cobrijani.core.kafka.IngredientSerializer
     consumer:
-      group-id: kafka-producer-demo
+      group-id: kafka-consumer-demo
       key-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
         spring.json.trusted.packages: com.github.cobrijani.core
         spring.deserializer.key.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
-        spring.deserializer.value.delegate.class: org.apache.kafka.common.serialization.StringDeserializer
+        spring.deserializer.value.delegate.class: com.github.cobrijani.core.kafka.IngredientDeserializer
   datasource:
     url: jdbc:postgresql://localhost:5430/consumer-user
     username: consumer-user

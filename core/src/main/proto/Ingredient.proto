@@ -1,0 +1,23 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "com.github.cobrijani.core";
+option java_outer_classname = "IngredientProto";
+
+message IngredientMessage {
+  string referenceId = 1;
+  string name = 2;
+  EventAction action = 3;
+  Version version = 4;
+}
+
+enum EventAction {
+  ADDED = 0;
+  CHANGED = 1;
+  DELETED = 2;
+}
+
+enum Version {
+  UNKNOWN = 0;
+  V1 = 1;
+}

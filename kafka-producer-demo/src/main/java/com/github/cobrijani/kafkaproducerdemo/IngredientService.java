@@ -1,13 +1,16 @@
 package com.github.cobrijani.kafkaproducerdemo;
 
-import com.github.cobrijani.core.Event;
 import com.github.cobrijani.core.EventAction;
-import com.github.cobrijani.core.IngredientDto;
+import com.github.cobrijani.core.IngredientMessage;
+import com.github.cobrijani.core.Version;
 import lombok.extern.java.Log;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.KafkaHeaders;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.lang.Nullable;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.concurrent.ListenableFuture;
 import org.springframework.util.concurrent.ListenableFutureCallback;
@@ -19,7 +22,7 @@ import java.util.UUID;
 @Log
 @Service
 public record IngredientService(IngredientJpaRepository ingredientJpaRepository,
-                                KafkaTemplate<String, Event<IngredientDto>> kafkaTemplate) {
+                                KafkaTemplate<String, IngredientMessage> kafkaTemplate) {
 
     public static final String TOPIC_NAME = "ingredients";
 
@@ -57,15 +60,22 @@ public record IngredientService(IngredientJpaRepository ingredientJpaRepository,
     }
 
     private void sendMessage(Ingredient ingredient, EventAction action) {
-        final ListenableFuture<SendResult<String, Event<IngredientDto>>> future =
-                kafkaTemplate.send(TOPIC_NAME, new Event<>(new IngredientDto(
-                        ingredient.getId().toString(),
-                        ingredient.getName()
-                ), action));
+        final IngredientMessage ingredientMessage = IngredientMessage.newBuilder()
+                .setAction(action)
+                .setName(ingredient.getName())
+                .setReferenceId(ingredient.getId().toString())
+                .setVersion(Version.V1)
+                .build();
+
+        final Message<IngredientMessage> msg = MessageBuilder.withPayload(ingredientMessage)
+                .setHeader(KafkaHeaders.TOPIC, TOPIC_NAME)
+                .build();
+
+        final ListenableFuture<SendResult<String, IngredientMessage>> future = kafkaTemplate.send(msg);
 
         future.addCallback(new ListenableFutureCallback<>() {
             @Override
-            public void onSuccess(@Nullable SendResult<String, Event<IngredientDto>> result) {
+            public void onSuccess(@Nullable SendResult<String, IngredientMessage> result) {
                 log.info("Sent message=[" + ingredient +
                         "] with offset=[" + Optional.ofNullable(result).map(SendResult::getRecordMetadata).map(RecordMetadata::offset)
                         .orElse(-1L) + "]");
